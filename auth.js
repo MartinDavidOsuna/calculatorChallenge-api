@@ -33,25 +33,36 @@ async function authenticate(req, res, next) {
     // Check if the decoded user is authorized
     const userExist = authorizedUsers.find((u) => u.email === decoded.username);
     if (!userExist) {
-
-      return res.status(401).json({ error: 'Invalid User' });
+      req.status = "error";
+      req.error_msg = "Invalid User";
+      // Call the next middleware
+      next();
+        
+     
     }
 
 
     // Check if the decoded user is authorized
     const user = authorizedUsers.find((u) => u.email === decoded.username && u.password === decoded.password);
     if (!user) {
-      return res.status(401).json({ error: 'Incorrect Password' });
+      req.status = "error";
+    req.error_msg = "Incorrect Password";
+    // Call the next middleware
+    next();
+      
     }
    
     // Add the user object to the request for use in the controller
     req.user = user.email;
     req.name = user.name;
     req.status = "ok";
+    req.error_msg = "";
     // Call the next middleware
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' });
+    req.status = "error";
+    req.error_msg = "Invalid token";
+    next();
   }
 }
 

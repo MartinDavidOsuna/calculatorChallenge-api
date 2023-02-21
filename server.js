@@ -53,12 +53,17 @@ router.route('/operations/:function&:value1').post((request,response)=>{
 })
 
 router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,response) =>{
+       
     const name = request.name;
     const user = request.user;
     const token = request.token;
     const status = request.status;
-
-    response.status(201).json({ status, name, user, token });
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        response.status(201).json({ status, name, user, token });
+    }else{
+        response.status(201).json({ status, error_msg});
+    }
 });
 
 
