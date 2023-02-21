@@ -56,9 +56,9 @@ router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,res
     const name = request.name;
     const user = request.user;
     const token = request.token;
-   
+    const status = request.status;
 
-    response.status(201).json({ name, user, token });
+    response.status(201).json({ status, name, user, token });
 });
 
 

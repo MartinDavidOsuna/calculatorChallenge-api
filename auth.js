@@ -47,7 +47,7 @@ async function authenticate(req, res, next) {
     // Add the user object to the request for use in the controller
     req.user = user.email;
     req.name = user.name;
-    
+    req.status = "ok";
     // Call the next middleware
     next();
   } catch (err) {
