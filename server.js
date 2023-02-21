@@ -5,6 +5,7 @@ const config = require('./config');
 const express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+const auth = require('./auth');
 
 
 const app = express();
@@ -51,7 +52,14 @@ router.route('/operations/:function&:value1').post((request,response)=>{
     })
 })
 
+router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,response) =>{
+    const name = request.name;
+    const user = request.user;
+    const token = request.token;
+   
 
+    response.status(201).json({ name, user, token });
+});
 
 
 

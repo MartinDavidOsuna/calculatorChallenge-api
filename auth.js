@@ -2,27 +2,28 @@ const jwt = require('jsonwebtoken');
 const dbOperations = require('./dboperations');
 
 // A sample secret key for JWT
-const JWT_SECRET = 'jF3CTBCdAm';
+const JWT_SECRET = "jF3CTBCdAm";
 
 // An array of authorized users
 let authorizedUsers = [];
+
+async function login(req, res, next){
+
+    token = jwt.sign({
+        username: req.body.username,
+        password: req.body.password
+    },JWT_SECRET)
+    req.token = token;
+     next();
+
+}
 
 
 // Middleware function for authentication
 async function authenticate(req, res, next) {
   authorizedUsers = await dbOperations.getUsersToAuth();
   authorizedUsers = JSON.parse(JSON.stringify(authorizedUsers));
-
-  // Get the authorization header from the request
-  const authHeader = req.headers.authorization;
- console.log(authHeader);
-  // Check if the header is present and has the correct format
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization header missing or invalid' });
-  }
-
-  // Extract the token from the header
-  const token = authHeader.split(' ')[1];
+  const token = req.token;
  
   try {
     // Verify the token using the JWT secret key
@@ -42,10 +43,11 @@ async function authenticate(req, res, next) {
     if (!user) {
       return res.status(401).json({ error: 'Incorrect Password' });
     }
-
+   
     // Add the user object to the request for use in the controller
-    req.user = decoded.username;
-    req.token = token;
+    req.user = user.email;
+    req.name = user.name;
+    
     // Call the next middleware
     next();
   } catch (err) {
@@ -54,5 +56,6 @@ async function authenticate(req, res, next) {
 }
 
 module.exports = {
-    authenticate:authenticate
+    authenticate:authenticate,
+    login:login
 };
