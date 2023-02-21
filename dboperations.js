@@ -55,7 +55,7 @@ async function getOperations(){   //function to get operations collection
 
 async function getRecords(){   //function to get records collection 
 
-    const sql = "SELECT * FROM records WHERE isDeleted == 0";
+    const sql = "SELECT * FROM records WHERE isDeleted = 0";
 
     let result = await executeQuery(sql);
 
