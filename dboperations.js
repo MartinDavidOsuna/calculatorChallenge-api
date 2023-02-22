@@ -14,7 +14,7 @@ async function getUsers(){   //function to get users collection
 
 async function getUsersToAuth(){   //function to get users collection
 
-    const sql = "SELECT email,password,name FROM users";
+    const sql = "SELECT email,password,name,id FROM users";
 
     let result = await executeQuery(sql);
 

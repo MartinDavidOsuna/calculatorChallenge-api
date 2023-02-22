@@ -44,6 +44,7 @@ async function authenticate(req, res, next) {
 
     // Check if the decoded user is authorized
     const user = authorizedUsers.find((u) => u.email === decoded.username && u.password === decoded.password);
+    console.log(user);
     if (!user) {
       req.status = "error";
     req.error_msg = "Incorrect Password";
