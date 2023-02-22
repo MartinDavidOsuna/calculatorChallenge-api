@@ -52,6 +52,8 @@ router.route('/lastRecords/:id').get((request,response)=>{
     })
 })
 
+
+//TO UPDATE
 router.route('/operations/:function&:value1&:value2').post((request,response)=>{
     calcOperations.operation(request.params.function,request.params.value1,request.params.value2).then(result => {
         response.status(201).json(result);
@@ -62,6 +64,28 @@ router.route('/operations/:function&:value1').post((request,response)=>{
     calcOperations.sqr(request.params.function,request.params.value1).then(result => {
         response.status(201).json(result);
     })
+})
+
+router.route('/operation').post(secureAuth.authenticate,(request,response)=>{
+    const operation = request.body.operation;
+    const value1 = request.body.value1;
+    const value2 = request.body.value2;
+    const userId = request.userid;
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        calcOperations.operation(operation,value1,value2,userId).then(result => {
+            
+            if(status == "ok"){
+                response.status(201).json(result);
+            }else{
+                
+                response.status(201).json({ status:"error", error_msg:result});
+            }
+        })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
 router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,response) =>{

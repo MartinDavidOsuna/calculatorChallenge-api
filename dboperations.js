@@ -23,14 +23,67 @@ async function getUsersToAuth(){   //function to get users collection
 }
 
 
-async function getUserBalance(id){   //function to get user by id
+async function getUserBalance(userId){   //function to get user by id
 
-    const sql = "SELECT balance FROM users WHERE id="+id;
+    const sql = "SELECT balance FROM users WHERE id="+userId;
 
     let result = await executeQuery(sql);
 
     return result;
 
+}
+
+async function chargeOperationToUser(operation,userId){
+    const balance = await getUserBalance(userId);
+    const operationCost = await getOperationCost(operation);
+
+    if(balance[0].balance >= operationCost[0].cost){
+        var balanceUpdated = balance[0].balance - operationCost[0].cost;
+        const sql = "UPDATE users SET balance = "+ balanceUpdated +" WHERE id="+userId;
+        executeQuery(sql);
+     
+        return {cost:operationCost[0].cost,balance:balanceUpdated};
+    }else{
+        return false;
+    }
+
+}
+
+async function setRecord(record){
+    const sql = "INSERT INTO records (operation_id,user_id,amount,user_balance,operation_response,date,isDeleted)"+
+                            " VALUES ("+record.operationId+","+record.userId+","+record.cost+","+record.balance+",'"+record.result+"',NOW(),0)";
+   
+    try{
+        executeQuery(sql);
+    }catch(err){
+        console.log(err);
+    }                         
+}
+
+async function getOperationCost(operationKey){
+    var cost;
+    var name = "";
+
+    switch(operationKey){
+        case "div" :  name = "division";
+                    break;
+        case "mul" : name = "multiplication";
+                    break;
+        case 'add' : name = "addition";
+                    break;
+        case "sub" : name = "subtraction";
+                    break;
+        case "sqr" : name = "square_root";
+                    break;
+        case "rnd" : name = "random_string";
+                    break;
+    }
+
+    const sql = "SELECT cost FROM operations WHERE type LIKE '%"+name+"%'";
+ 
+    cost = await executeQuery(sql);
+   
+    return cost;
 }
 
 
@@ -87,9 +140,10 @@ function executeQuery(query){
     
     connection.connect(function(err){
         if(err) throw err;
-        //console.log("Database Connected!");
+        
     });
     return new Promise((resolve, reject) =>{
+       
         connection.query(query, function (err,rows,fields){ 
             if(err){
                 reject(err);
@@ -111,5 +165,7 @@ module.exports = {
     getAllRecords:getAllRecords,
     getLastRecords:getLastRecords,
     getUserBalance:getUserBalance,
-    getUsersToAuth:getUsersToAuth
+    getUsersToAuth:getUsersToAuth,
+    setRecord:setRecord,
+    chargeOperationToUser:chargeOperationToUser
 };

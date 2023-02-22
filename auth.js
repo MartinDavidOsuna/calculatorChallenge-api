@@ -23,8 +23,8 @@ async function login(req, res, next){
 async function authenticate(req, res, next) {
   authorizedUsers = await dbOperations.getUsersToAuth();
   authorizedUsers = JSON.parse(JSON.stringify(authorizedUsers));
-  const token = req.token;
- 
+  const token = req.body.token;
+
   try {
     // Verify the token using the JWT secret key
     const decoded = jwt.verify(token, JWT_SECRET);

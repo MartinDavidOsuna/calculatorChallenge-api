@@ -1,35 +1,72 @@
-var dbconfig = require('./dbconfig');
+var dbOperations = require('./dboperations');
 const mysql = require('mysql');
 const request = require('request'); 
 
-async function operation(operation,val1,val2){
+async function operation(operation,val1,val2,userId){
     var result;
-    if(val1!="" && val2!=""){
-        switch (operation){
-            case 'add' : result = Number(val1)+Number(val2);
-                        break;
-            case 'sub' : result = val1-val2;
-                        break;
-            case 'mul' : result = val1*val2;
-                        break;
-            case 'div' : result = val1/val2;
-                        break;
-            default: 
-                    if(operation =="sqr" && operation=="rnd"){
-                        console.log("error calling function "+operation+",too much parameters");
-                    }else{
-                        console.log("invalid operation");
-                    }
-                    break;
+    var operationId;
+    var operationCost;
+    var record = {};
+    if(operation != "rnd"){
+        if(val1!="" && val2!="" ){
+            switch (operation){
+                case 'add' : result = Number(val1)+Number(val2);
+                            operationId=1;
+                            break;
+                case 'sub' : result = val1-val2;
+                            operationId=2;
+                            break;
+                case 'mul' : result = val1*val2;
+                            operationId=3;
+                            break;
+                case 'div' : result = val1/val2;
+                            operationId=4;
+                            break;
+                default: 
+                        if(operation =="sqr"){
+                            return "error calling function "+operation+",too much parameters";
+                        }else{
+                            return "invalid operation";
+                        }
+            }
+        }else{
+            if(val1!="" && operation=="sqr"){
+                result= Math.sqrt(val1);
+                operationId=5;
+            }else{
+                return "error calling function "+operation;
+            }
         }
+    }else{
+        result = await getRandomString();
+        operationId=6;
+    }
+    operationCost = await dbOperations.chargeOperationToUser(operation,userId);
+    record = {
+        operationId:operationId,
+        userId:userId,
+        cost:operationCost.cost,
+        balance:operationCost.balance,
+        result:result
+    }
+
+
+    if(operationCost && result!=null){
+        try{
+            dbOperations.setRecord(record);
+        }catch (err){
+            return "Error: impossible to set record on Database"
+        }
+        
         return result;
     }else{
-        console.log("error calling function "+operation+",empty parameter");
+        return "Declined: Not enough available credit";
     }
-    
-
 }
 
+
+
+//DEPRECIATED
 async function sqr(operation,val1){
     var result;
     if(operation="sqr"){
@@ -50,6 +87,7 @@ async function sqr(operation,val1){
 
 }
 
+//DEPRECIATED
 async function random(operation){
 
     var result;
@@ -72,8 +110,6 @@ async function random(operation){
 }
 
 async function getRandomString(){
-
-    let word;
 
     const url = 'https://api.random.org/json-rpc/4/invoke';
 
