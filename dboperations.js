@@ -56,7 +56,15 @@ async function getRecords(){   //function to get records collection
 
 async function getLastRecords(id){   //function to get records collection 
 
-    const sql = "SELECT * FROM records WHERE (user_id="+id+" AND isDeleted = 0) ORDER BY date DESC LIMIT 5";
+    //const sql = "SELECT * FROM records WHERE (user_id="+id+" AND isDeleted = 0) ORDER BY date DESC LIMIT 5";
+
+    const sql = "SELECT records.id, operations.type,records.amount,records.user_balance,records.operation_response,records.date "+
+                "FROM records "+ 
+                "INNER JOIN users "+
+                "ON `records`.`user_id` = `users`.`id` AND records.user_id ="+id+" AND isDeleted = 0 "+
+                "INNER JOIN operations "+
+                "ON `records`.`operation_id` = operations.id ORDER BY date DESC LIMIT 5";
+
 
     let result = await executeQuery(sql);
 
