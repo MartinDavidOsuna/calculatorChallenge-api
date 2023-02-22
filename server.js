@@ -29,7 +29,7 @@ router.route('/users').get((request,response)=>{
 })
 
 router.route('/users/balance/:id').get((request,response)=>{
-    dbOperations.getUserBalance().then(result => {
+    dbOperations.getUserBalance(request.params.id).then(result => {
        response.json(result);
     })
 })
