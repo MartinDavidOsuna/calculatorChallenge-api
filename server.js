@@ -68,11 +68,12 @@ router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,res
        
     const name = request.name;
     const user = request.user;
+    const userId = request.userId;
     const token = request.token;
     const status = request.status;
     const error_msg = request.error_msg;
     if(status == "ok"){
-        response.status(201).json({ status, name, user, token });
+        response.status(201).json({ status, userId, name, user, token });
     }else{
         response.status(201).json({ status, error_msg});
     }
