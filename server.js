@@ -15,7 +15,7 @@ var router = express.Router();
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 app.use(cors(config.application));
-app.use('/api',router);
+app.use('/api/V1',router);
 
 router.use((request,response,next)=>{
     //console.log('Operation successful');
