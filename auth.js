@@ -13,7 +13,7 @@ async function login(req, res, next){
         username: req.body.username,
         password: req.body.password
     },JWT_SECRET)
-    req.token = token;
+    req.body.token = token;
      next();
 
 }
