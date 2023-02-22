@@ -54,9 +54,9 @@ async function getRecords(){   //function to get records collection
 
 }
 
-async function getLastRecords(){   //function to get records collection 
+async function getLastRecords(id){   //function to get records collection 
 
-    const sql = "SELECT * FROM records WHERE isDeleted = 0 ORDER BY date LIMIT 5";
+    const sql = "SELECT * FROM records WHERE (user_id="+id+" AND isDeleted = 0) ORDER BY date DESC LIMIT 5";
 
     let result = await executeQuery(sql);
 

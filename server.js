@@ -46,8 +46,8 @@ router.route('/records').get((request,response)=>{
     })
 })
 
-router.route('/lastRecords').get((request,response)=>{
-    dbOperations.getLastRecords().then(result => {
+router.route('/lastRecords/:id').get((request,response)=>{
+    dbOperations.getLastRecords(request.params.id).then(result => {
        response.json(result);
     })
 })
