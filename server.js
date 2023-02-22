@@ -28,6 +28,12 @@ router.route('/users').get((request,response)=>{
     })
 })
 
+router.route('/users/balance/:id').get((request,response)=>{
+    dbOperations.getUserBalance().then(result => {
+       response.json(result);
+    })
+})
+
 router.route('/operations').get((request,response)=>{
     dbOperations.getOperations().then(result => {
        response.json(result);
@@ -36,6 +42,12 @@ router.route('/operations').get((request,response)=>{
 
 router.route('/records').get((request,response)=>{
     dbOperations.getRecords().then(result => {
+       response.json(result);
+    })
+})
+
+router.route('/lastRecords').get((request,response)=>{
+    dbOperations.getLastRecords().then(result => {
        response.json(result);
     })
 })

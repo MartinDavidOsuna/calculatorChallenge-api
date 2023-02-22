@@ -22,15 +22,6 @@ async function getUsersToAuth(){   //function to get users collection
 
 }
 
-async function getUser(id){   //function to get user by id
-
-    const sql = "SELECT * FROM users WHERE id="+id;
-
-    let result = await executeQuery(sql);
-
-    return result;
-
-}
 
 async function getUserBalance(id){   //function to get user by id
 
@@ -56,6 +47,16 @@ async function getOperations(){   //function to get operations collection
 async function getRecords(){   //function to get records collection 
 
     const sql = "SELECT * FROM records WHERE isDeleted = 0";
+
+    let result = await executeQuery(sql);
+
+    return result;
+
+}
+
+async function getLastRecords(){   //function to get records collection 
+
+    const sql = "SELECT * FROM records WHERE isDeleted = 0 ORDER BY date LIMIT 5";
 
     let result = await executeQuery(sql);
 
@@ -100,7 +101,7 @@ module.exports = {
     getOperations:getOperations,
     getRecords:getRecords,
     getAllRecords:getAllRecords,
-    getUser:getUser,
+    getLastRecords:getLastRecords,
     getUserBalance:getUserBalance,
     getUsersToAuth:getUsersToAuth
 };
