@@ -28,8 +28,7 @@ async function authenticate(req, res, next) {
   try {
     // Verify the token using the JWT secret key
     const decoded = jwt.verify(token, JWT_SECRET);
-    
-
+   
     // Check if the decoded user is authorized
     const userExist = authorizedUsers.find((u) => u.email === decoded.username);
     if (!userExist) {
@@ -37,14 +36,11 @@ async function authenticate(req, res, next) {
       req.error_msg = "Invalid User";
       // Call the next middleware
       next();
-        
-     
     }
 
 
     // Check if the decoded user is authorized
     const user = authorizedUsers.find((u) => u.email === decoded.username && u.password === decoded.password);
-    
     if (!user) {
       req.status = "error";
     req.error_msg = "Incorrect Password";

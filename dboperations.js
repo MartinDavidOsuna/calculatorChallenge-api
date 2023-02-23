@@ -60,6 +60,11 @@ async function setRecord(record){
     }                         
 }
 
+async function deleteRecord(record){
+    const sql = "UPDATE records SET isDeleted = 1 WHERE id="+record;
+    executeQuery(sql);
+}
+
 async function getOperationCost(operationKey){
     var cost;
     var name = "";
@@ -109,7 +114,7 @@ async function getRecords(){   //function to get records collection
 
 async function getLastRecords(id){   //function to get records collection 
 
-    //const sql = "SELECT * FROM records WHERE (user_id="+id+" AND isDeleted = 0) ORDER BY date DESC LIMIT 5";
+   
 
     const sql = "SELECT records.id, operations.type,records.amount,records.user_balance,records.operation_response,records.date "+
                 "FROM records "+ 
@@ -167,5 +172,6 @@ module.exports = {
     getUserBalance:getUserBalance,
     getUsersToAuth:getUsersToAuth,
     setRecord:setRecord,
+    deleteRecord:deleteRecord,
     chargeOperationToUser:chargeOperationToUser
 };

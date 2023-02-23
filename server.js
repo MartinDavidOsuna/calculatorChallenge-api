@@ -5,12 +5,8 @@ const config = require('./config');
 const express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-const auth = require('./auth');
-
-
 const app = express();
 var router = express.Router();
-
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -18,52 +14,70 @@ app.use(cors(config.application));
 app.use('/api/V1',router);
 
 router.use((request,response,next)=>{
-    //console.log('Operation successful');
     next();
 })
 
-router.route('/users').get((request,response)=>{
-    dbOperations.getUsers().then(result => {
-       response.json(result);
-    })
+router.route('/users').post(secureAuth.authenticate,(request,response)=>{
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        dbOperations.getUsers().then(result => {
+            response.json(result);
+        })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
-router.route('/users/balance/:id').get((request,response)=>{
-    dbOperations.getUserBalance(request.params.id).then(result => {
-       response.json(result);
-    })
+router.route('/users/balance').post(secureAuth.authenticate,(request,response)=>{
+    const user_id = request.body.id;
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        dbOperations.getUserBalance(user_id).then(result => {
+            response.json(result);
+        })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
-router.route('/operations').get((request,response)=>{
-    dbOperations.getOperations().then(result => {
-       response.json(result);
-    })
+router.route('/operations').post(secureAuth.authenticate,(request,response)=>{
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        dbOperations.getOperations().then(result => {
+            response.json(result);
+        })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
-router.route('/records').get((request,response)=>{
-    dbOperations.getRecords().then(result => {
-       response.json(result);
-    })
+router.route('/lastRecords').post(secureAuth.authenticate,(request,response)=>{
+    const user_id = request.body.id;
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        dbOperations.getLastRecords(user_id).then(result => {
+            response.json(result);
+        })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
-router.route('/lastRecords/:id').get((request,response)=>{
-    dbOperations.getLastRecords(request.params.id).then(result => {
-       response.json(result);
-    })
-})
-
-
-//TO UPDATE
-router.route('/operations/:function&:value1&:value2').post((request,response)=>{
-    calcOperations.operation(request.params.function,request.params.value1,request.params.value2).then(result => {
-        response.status(201).json(result);
-     })
-})
-
-router.route('/operations/:function&:value1').post((request,response)=>{
-    calcOperations.sqr(request.params.function,request.params.value1).then(result => {
-        response.status(201).json(result);
-    })
+router.route('/deleteRecord').post(secureAuth.authenticate,(request,response)=>{
+    const record_id = request.body.id;
+    const status = request.status;
+    const error_msg = request.error_msg;
+    if(status == "ok"){
+        dbOperations.deleteRecord(record_id).then(result => {
+            response.json(result);
+         })
+    }else{
+        response.status(201).json({ status, error_msg}); 
+    }
 })
 
 router.route('/operation').post(secureAuth.authenticate,(request,response)=>{
@@ -75,11 +89,9 @@ router.route('/operation').post(secureAuth.authenticate,(request,response)=>{
     const error_msg = request.error_msg;
     if(status == "ok"){
         calcOperations.operation(operation,value1,value2,userId).then(result => {
-            
             if(status == "ok"){
                 response.status(201).json(result);
             }else{
-                
                 response.status(201).json({ status:"error", error_msg:result});
             }
         })
@@ -89,7 +101,6 @@ router.route('/operation').post(secureAuth.authenticate,(request,response)=>{
 })
 
 router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,response) =>{
-       
     const name = request.name;
     const user = request.user;
     const userId = request.userid;
@@ -103,24 +114,11 @@ router.route('/auth').post(secureAuth.login,secureAuth.authenticate,(request,res
     }
 });
 
-
-
-// Protected route that requires authentication
 router.route('/login').get(secureAuth.authenticate, (req, res) => {
-    // The user object is available in the req object due to the authenticate middleware
     const user = req.user;
     const token = req.token;
-   
     res.json({ user, token });
-  });
-
-
-router.route('/operations/:function').post((request,response)=>{
-    calcOperations.random(request.params.function).then(result => {
-        response.status(201).json(result);
-    })
-})
-
+});
 
 var port = process.env.PORT || 8090
 app.listen(port);
