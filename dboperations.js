@@ -116,7 +116,7 @@ async function getLastRecords(id){   //function to get records collection
                 "INNER JOIN users "+
                 "ON `records`.`user_id` = `users`.`id` AND records.user_id ="+id+" AND isDeleted = 0 "+
                 "INNER JOIN operations "+
-                "ON `records`.`operation_id` = operations.id ORDER BY date DESC LIMIT 5";
+                "ON `records`.`operation_id` = operations.id ORDER BY date DESC";
 
 
     let result = await executeQuery(sql);
