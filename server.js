@@ -5,15 +5,15 @@ const config = require('./config');
 const express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-const https = require("https");
-const fs = require("fs");
+//const https = require("https");   FOR HTTPS CONNECTIONS
+//const fs = require("fs");
 const app = express();
 var router = express.Router();
 
-const options = {
+/*const options = { FOR HTTPS CONNECTIONS
     key: fs.readFileSync("./config/cert.key"),
     cert: fs.readFileSync("./config/cert.crt"),
-}
+}*/
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -127,9 +127,10 @@ router.route('/login').get(secureAuth.authenticate, (req, res) => {
     res.json({ user, token });
 });
 
-var port = process.env.PORT || 9090
+var port = process.env.PORT || 8080
 app.listen(port);
 
+/*    FOR HTTPS CONNECTIONS
 https.createServer(options, app).listen(8090, () =>{
     console.log('Server https listening on port 9090');
-});
+});*/
